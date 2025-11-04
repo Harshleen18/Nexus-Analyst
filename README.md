@@ -1,1 +1,365 @@
 # Nexus-Analyst
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expert Investment Strategist (Multimodal)</title>
+    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font family --><style>
+        /* Green and Black Theme */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #000000; /* Pure Black */
+            color: #d1fae5; /* Light Green */
+        }
+        .card { 
+            background-color: #1a1a1a; /* Darker Black/Gray */
+            border: 1px solid #10b981; /* Emerald Green */
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); /* Green glow */
+        }
+        .text-primary-green { color: #10b981; } /* Emerald Green */
+        .bg-primary-green { background-color: #10b981; } /* Emerald Green */
+        .hover\:bg-green-600:hover { background-color: #059669; } /* Darker Green on Hover */
+        .focus\:border-primary-green:focus { border-color: #10b981; }
+        .focus\:ring-primary-green:focus { ring-color: #10b981; }
+        .border-border-color { border-color: #10b981; } /* Green border for inputs */
+        .file-upload-label {
+            border: 2px dashed #10b981; /* Green dashed border */
+        }
+        .file-upload-label:hover {
+            border-color: #059669; /* Darker Green on Hover */
+            background-color: #0a0a0a; /* Subtle hover background */
+        }
+        .file\:bg-primary-green\/50 { background-color: rgba(16, 185, 129, 0.5); }
+        .hover\:file\:bg-primary-green:hover { background-color: #10b981; }
+        #output-content strong:first-child {
+            color: #ef4444; /* Retain red for strong warning */
+        }
+
+        /* General styles */
+        #output-content { word-wrap: break-word; } 
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-green': '#10b981', /* Emerald Green */
+                        'dark-bg': '#000000',     /* Pure Black */
+                        'card-bg': '#1a1a1a',     /* Dark Gray/Black for cards */
+                        'border-color': '#10b981', /* Green for borders */
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="p-4 sm:p-8 min-h-screen">
+
+    <div class="max-w-3xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-primary-green mb-2">Expert Investment Strategist</h1>
+            <p class="text-gray-400">Perform Multimodal Analysis (Text + Optional Image).</p>
+        </header>
+
+        <!-- Input Card --><div class="card p-6 rounded-xl shadow-lg mb-8">
+            <label for="investment-query" class="block text-lg font-medium mb-3 text-d1fae5">
+                Your Investment Query:
+            </label>
+            <textarea id="investment-query" rows="4" placeholder="E.g., Analyze Tesla (TSLA) stock performance over 6 months, focusing on the latest earnings report. (You can also upload a chart below.)"
+                class="w-full p-3 rounded-lg bg-dark-bg border border-border-color focus:ring-primary-green focus:border-primary-green text-d1fae5 placeholder-gray-500 transition duration-150 ease-in-out"></textarea>
+
+            <label class="block text-lg font-medium mb-3 mt-6 text-d1fae5">
+                Upload Optional Stock Chart or Screenshot:
+            </label>
+            <label for="image-upload" class="file-upload-label text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 mx-auto mb-2 text-primary-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                <span id="upload-text" class="text-d1fae5 font-semibold">Click to select image file</span>
+                <span class="block text-sm mt-1 text-gray-500">Only JPG, PNG, or GIF files allowed.</span>
+            </label>
+            <input type="file" id="image-upload" accept="image/*" onchange="handleImageUploadChange()">
+            
+            <div id="image-preview-container" class="mt-4 p-4 bg-card-bg border border-border-color rounded-lg hidden text-center">
+                <!-- Image preview will be dynamically loaded here --></div>
+
+            <button id="analyze-button" class="mt-4 w-full py-3 rounded-lg text-lg font-semibold bg-primary-green hover:bg-green-600 transition duration-150 ease-in-out text-black shadow-md shadow-primary-green/30" onclick="analyzeInvestment()">
+                Perform Multimodal Analysis
+            </button>
+        </div>
+
+        <!-- Output Card (Analysis & Sources) --><div class="card p-6 rounded-xl shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-d1fae5">Analysis Results</h2>
+                <button id="clear-button" class="text-sm text-gray-400 hover:text-red-400 transition duration-150" onclick="clearResults()">
+                    Clear All
+                </button>
+            </div>
+            
+            <div id="loading-indicator" class="hidden text-center p-8">
+                <div class="animate-spin inline-block w-8 h-8 border-4 border-primary-green border-t-transparent rounded-full"></div>
+                <p id="loading-message" class="mt-2 text-primary-green">Analyzing market data...</p>
+            </div>
+
+            <div id="output-container">
+                <div id="output-content" class="min-h-[150px] p-4 bg-dark-bg border border-border-color rounded-lg text-d1fae5">
+                    <p class="text-gray-500">Your professional investment analysis will appear here. Enter your query above to begin.</p>
+                </div>
+
+                <div id="source-list" class="mt-4 text-sm text-gray-400">
+                    <!-- Sources will be dynamically added here --></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const apiKey = ""; // Your API Key will be injected here
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+        // -----------------------------------------------------------------------
+        // UPDATED SYSTEM PROMPT for Multimodal Expert
+        // -----------------------------------------------------------------------
+        const SYSTEM_PROMPT = `
+        You are an **Expert Market Interpreter and Seasoned Financial Strategist**, capable of integrating both textual market context and visual chart analysis. Your primary function is to provide a concise, high-conviction, ethically grounded, preliminary assessment of a stock or sector.
+
+        Your analysis must sound highly professional, confident, and draw upon deep knowledge of fundamental, technical, and macroeconomic analysis. You must always maintain an objective and cautious tone regarding risk.
+
+        If an image (chart) is provided, prioritize its technical insights and integrate them seamlessly with the textual query. If no image is provided, rely solely on the textual query and real-time data.
+
+        You must always respond in three highly structured sections: STRATEGIC DISCLOSURE, CORE INSIGHTS (Bullet Points), and CONVICTION & IMMEDIATE NEXT STEP.
+
+        Response Format MUST BE:
+
+        ⚠️ **EXPERT DISCLOSURE & RISK WARNING:** This is a high-level, preliminary assessment for **research and educational purposes only.** It is not an endorsement, recommendation, or solicitation to trade. Investment carries inherent risk, and deep, independent due diligence is mandatory before any financial action.
+
+        📊 **CORE INSIGHTS (4-7 Data Points):** Provide focused, high-value insights.
+
+        - [Insight 1: **Valuation Context / Chart Structure** - If image, analyze price action, trend structure, and key patterns. If text, discuss a key multiple (e.g., Forward P/E, EV/EBITDA) relative to the sector average or historical trend.]
+        - [Insight 2: **Key Technical Levels / Fundamental Drivers** - If image, identify critical support/resistance, moving averages, or indicator signals. If text, identify the primary fundamental drivers (e.g., earnings growth, product cycles, competitive moat).]
+        - [Insight 3: **Catalyst/Headwind Assessment** - Identify the primary macro or company-specific drivers expected in the near term.]
+        - [Insight 4: **Risk Factor / Technical Confirmation** - State the most significant existential risk or a crucial technical confirmation needed (e.g., "Confirm breakout above $X with increased volume") or a specific fundamental red flag.]
+        - [Add more sophisticated insights up to 7, always based on the data you have available, maintaining an expert tone, seamlessly blending technical and fundamental where appropriate.]
+
+        💡 **CONVICTION & IMMEDIATE NEXT STEP:** [A brief, single-sentence summary of the high-level conviction (e.g., "The strategic conviction is Neutral-to-Slightly Bullish, pending earnings confirmation.") followed by a singular, specific analytical task for the user to perform next (e.g., "The immediate next step is to analyze the Q3 free cash flow trends," or "Confirm breakout above the $50 resistance level with increased daily volume.").
+        `;
+        // -----------------------------------------------------------------------
+        
+        // UI Elements
+        const queryInput = document.getElementById('investment-query');
+        const imageUpload = document.getElementById('image-upload');
+        const analyzeButton = document.getElementById('analyze-button');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const loadingMessage = document.getElementById('loading-message');
+        const outputContent = document.getElementById('output-content');
+        const sourceList = document.getElementById('source-list');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const uploadText = document.getElementById('upload-text');
+
+        function handleImageUploadChange() {
+            const file = imageUpload.files[0];
+            if (file) {
+                imagePreviewContainer.classList.remove('hidden');
+                uploadText.textContent = file.name;
+                
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imagePreviewContainer.innerHTML = 
+                            `<p class="text-sm text-gray-400 mb-2 font-medium">Selected Chart:</p>` + 
+                            `<img src="${e.target.result}" class="max-w-full h-auto max-h-40 object-contain rounded-md border border-primary-green/30 mx-auto" alt="Image Preview">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreviewContainer.innerHTML = `<p class="text-red-400">Invalid file type. Please upload an image.</p>`;
+                }
+
+            } else {
+                imagePreviewContainer.classList.add('hidden');
+                imagePreviewContainer.innerHTML = '';
+                uploadText.textContent = 'Click to select image file';
+            }
+        }
+
+        function clearResults() {
+            queryInput.value = '';
+            imageUpload.value = '';
+            imagePreviewContainer.classList.add('hidden');
+            imagePreviewContainer.innerHTML = '';
+            uploadText.textContent = 'Click to select image file';
+            
+            outputContent.innerHTML = '<p class="text-gray-500">Your professional investment analysis will appear here. Enter your query above to begin.</p>';
+            sourceList.innerHTML = '';
+            setUIState(false);
+        }
+
+        function displayError(message) {
+            outputContent.innerHTML = `<div class="text-red-500 font-medium">${message}</div>`;
+            sourceList.innerHTML = '';
+        }
+
+        function setUIState(isLoading) {
+            analyzeButton.disabled = isLoading;
+            analyzeButton.textContent = isLoading ? 'Analyzing...' : 'Perform Multimodal Analysis';
+            loadingIndicator.classList.toggle('hidden', !isLoading);
+            
+            // Dynamic Loading Message
+            const fileSelected = imageUpload.files.length > 0;
+            if (isLoading) {
+                if (fileSelected) {
+                    loadingMessage.textContent = 'Integrating image analysis with real-time data and formulating strategy...';
+                } else {
+                    loadingMessage.textContent = 'Searching global financial data and formulating expert strategy...';
+                }
+            } else {
+                loadingMessage.textContent = 'Analysis complete.';
+            }
+            
+            if (isLoading) {
+                outputContent.innerHTML = '';
+                sourceList.innerHTML = '';
+            }
+        }
+        
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function analyzeInvestment() {
+            setUIState(true);
+
+            let parts = [];
+            let tools = [];
+            const userQuery = queryInput.value.trim();
+            const file = imageUpload.files[0];
+
+            if (!userQuery && !file) {
+                displayError('Please enter a query or upload an image for analysis.');
+                setUIState(false); return;
+            }
+
+            try {
+                if (file) {
+                    const base64Data = await fileToBase64(file);
+                    const mimeType = file.type;
+
+                    parts.push({
+                        inlineData: {
+                            mimeType: mimeType,
+                            data: base64Data
+                        }
+                    });
+                    // Initial text to guide the model when an image is present
+                    parts.push({ text: `Analyze the provided stock chart image, integrating it with the following textual query for a comprehensive expert analysis: "${userQuery || 'General stock analysis.'}". Ensure the response strictly follows the required format, seamlessly blending technical and fundamental insights.` });
+                    // Even with image, we want to try for text grounding if a query exists
+                    if (userQuery) {
+                       tools = [{ "google_search": {} }]; 
+                    }
+                } else if (userQuery) {
+                    parts.push({ text: `Provide an "Expert Market Interpretation" for: "${userQuery}". Ensure the response strictly follows the required format.` });
+                    tools = [{ "google_search": {} }];
+                }
+
+            } catch (error) {
+                displayError(`File Error: Could not read image file. ${error.message}`);
+                setUIState(false);
+                return;
+            }
+
+            const payload = {
+                contents: [{ role: "user", parts: parts }],
+                tools: tools,
+                systemInstruction: {
+                    parts: [{ text: SYSTEM_PROMPT }]
+                },
+            };
+
+            const maxRetries = 5;
+            let currentRetry = 0;
+
+            while (currentRetry < maxRetries) {
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 429) { // Rate limit error
+                            throw new Error(`Rate limit exceeded (429). Retrying in ${Math.pow(2, currentRetry)}s...`);
+                        }
+                        const errorData = await response.json();
+                        throw new Error(`API Error: ${errorData.error?.message || response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    const candidate = result.candidates?.[0];
+
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        const text = candidate.content.parts[0].text;
+
+                        let sources = [];
+                        const groundingMetadata = candidate.groundingMetadata;
+                        if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                            sources = groundingMetadata.groundingAttributions
+                                .map(attribution => ({
+                                    uri: attribution.web?.uri,
+                                    title: attribution.web?.title,
+                                }))
+                                .filter(source => source.uri && source.title);
+                        }
+                        
+                        outputContent.innerHTML = DOMPurify.sanitize(marked.parse(text));
+                        
+                        if (sources.length > 0) {
+                            sourceList.innerHTML = `<h3 class="font-semibold text-d1fae5 mt-4 mb-2">Sources (Used for Analysis):</h3>` +
+                                sources.map((s, index) => 
+                                    `<a href="${s.uri}" target="_blank" class="block text-primary-green hover:text-green-400 truncate">${index + 1}. ${s.title}</a>`
+                                ).join('');
+                        } else {
+                            sourceList.innerHTML = '<p class="text-gray-500">No external search sources were explicitly required for this analysis, or it was primarily image-driven.</p>';
+                        }
+
+                        setUIState(false);
+                        return;
+
+                    } else {
+                         throw new Error("Received an unexpected response structure from the API.");
+                    }
+
+                } catch (error) {
+                    console.error("Analysis Error:", error);
+                    currentRetry++;
+                    if (currentRetry < maxRetries) {
+                        const delay = Math.pow(2, currentRetry) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    } else {
+                        displayError(`Analysis failed after ${maxRetries} attempts. Error: ${error.message}`);
+                        setUIState(false);
+                        return;
+                    }
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const markedScript = document.createElement('script');
+            markedScript.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+            document.head.appendChild(markedScript);
+
+            const purifyScript = document.createElement('script');
+            purifyScript.src = 'https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js';
+            document.head.appendChild(purifyScript);
+        });
+
+    </script>
+</body>
+</html>
