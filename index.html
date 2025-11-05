@@ -1,24 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expert Investment Strategist (Multimodal)</title>
-<meta name="description" content="Nexus Analyst: Expert AI tool for multimodal investment strategy, stock analysis, and market trend assessment using text and charts.">
-<meta name="keywords" content="Stock Analysis, Investment Strategist, AI Finance, Multimodal Analysis, Market Trends, Financial Research">
-    <!-- Google tag (gtag.js) for visitor tracking - START -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-4C18GDB1S3"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-4C18GDB1S3');
-</script>
-<!-- Google tag (gtag.js) for visitor tracking - END -->
-
+    <title>Nexus Analyst: Expert Investment Strategist</title>
     <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
-    <!-- Use Inter font family --><style>
+    <!-- Use Inter font family -->
+    <style>
         /* Green and Black Theme */
         body { 
             font-family: 'Inter', sans-serif; 
@@ -48,6 +36,22 @@
         #output-content strong:first-child {
             color: #ef4444; /* Retain red for strong warning */
         }
+        .nav-link {
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background-color 0.2s, color 0.2s;
+            font-weight: 600;
+        }
+        .nav-link.active {
+            background-color: #10b981;
+            color: #000000;
+            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.4);
+        }
+        .nav-link:not(.active):hover {
+            background-color: #1a1a1a;
+            color: #10b981;
+        }
 
         /* General styles */
         #output-content { word-wrap: break-word; } 
@@ -69,61 +73,161 @@
 </head>
 <body class="p-4 sm:p-8 min-h-screen">
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-4xl mx-auto">
         <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-primary-green mb-2">Expert Investment Strategist</h1>
-            <p class="text-gray-400">Perform Multimodal Analysis (Text + Optional Image).</p>
+            <h1 class="text-4xl font-bold text-primary-green mb-1">Nexus Analyst</h1>
+            <p class="text-gray-400">Expert Investment Strategist (Multimodal)</p>
         </header>
 
-        <!-- Input Card --><div class="card p-6 rounded-xl shadow-lg mb-8">
-            <label for="investment-query" class="block text-lg font-medium mb-3 text-d1fae5">
-                Your Investment Query:
-            </label>
-            <textarea id="investment-query" rows="4" placeholder="E.g., Analyze Tesla (TSLA) stock performance over 6 months, focusing on the latest earnings report. (You can also upload a chart below.)"
-                class="w-full p-3 rounded-lg bg-dark-bg border border-border-color focus:ring-primary-green focus:border-primary-green text-d1fae5 placeholder-gray-500 transition duration-150 ease-in-out"></textarea>
+        <!-- Navigation Bar (NEW) -->
+        <nav class="flex justify-center space-x-2 sm:space-x-4 mb-8 p-3 rounded-xl bg-card-bg shadow-lg border border-border-color">
+            <a id="nav-analysis" class="nav-link active" onclick="setView('analysis')">Analysis Tool</a>
+            <a id="nav-about" class="nav-link" onclick="setView('about')">About Us</a>
+            <a id="nav-privacy" class="nav-link" onclick="setView('privacy')">Privacy Policy</a>
+            <a id="nav-contact" class="nav-link" onclick="setView('contact')">Contact</a>
+        </nav>
 
-            <label class="block text-lg font-medium mb-3 mt-6 text-d1fae5">
-                Upload Optional Stock Chart or Screenshot:
-            </label>
-            <label for="image-upload" class="file-upload-label text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 mx-auto mb-2 text-primary-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
-                <span id="upload-text" class="text-d1fae5 font-semibold">Click to select image file</span>
-                <span class="block text-sm mt-1 text-gray-500">Only JPG, PNG, or GIF files allowed.</span>
-            </label>
-            <input type="file" id="image-upload" accept="image/*" onchange="handleImageUploadChange()">
-            
-            <div id="image-preview-container" class="mt-4 p-4 bg-card-bg border border-border-color rounded-lg hidden text-center">
-                <!-- Image preview will be dynamically loaded here --></div>
+        <!-- 1. ANALYSIS TOOL VIEW (EXISTING CONTENT) -->
+        <div id="analysis-view">
+            <!-- Input Card -->
+            <div class="card p-6 rounded-xl shadow-lg mb-8">
+                <label for="investment-query" class="block text-lg font-medium mb-3 text-d1fae5">
+                    Your Investment Query:
+                </label>
+                <textarea id="investment-query" rows="4" placeholder="E.g., Analyze Tesla (TSLA) stock performance over 6 months, focusing on the latest earnings report. (You can also upload a chart below.)"
+                    class="w-full p-3 rounded-lg bg-dark-bg border border-border-color focus:ring-primary-green focus:border-primary-green text-d1fae5 placeholder-gray-500 transition duration-150 ease-in-out"></textarea>
 
-            <button id="analyze-button" class="mt-4 w-full py-3 rounded-lg text-lg font-semibold bg-primary-green hover:bg-green-600 transition duration-150 ease-in-out text-black shadow-md shadow-primary-green/30" onclick="analyzeInvestment()">
-                Perform Multimodal Analysis
-            </button>
-        </div>
+                <label class="block text-lg font-medium mb-3 mt-6 text-d1fae5">
+                    Upload Optional Stock Chart or Screenshot:
+                </label>
+                <label for="image-upload" class="file-upload-label text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 mx-auto mb-2 text-primary-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    <span id="upload-text" class="text-d1fae5 font-semibold">Click to select image file</span>
+                    <span class="block text-sm mt-1 text-gray-500">Only JPG, PNG, or GIF files allowed.</span>
+                </label>
+                <input type="file" id="image-upload" accept="image/*" onchange="handleImageUploadChange()">
+                
+                <div id="image-preview-container" class="mt-4 p-4 bg-card-bg border border-border-color rounded-lg hidden text-center">
+                    <!-- Image preview will be dynamically loaded here --></div>
 
-        <!-- Output Card (Analysis & Sources) --><div class="card p-6 rounded-xl shadow-lg">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-semibold text-d1fae5">Analysis Results</h2>
-                <button id="clear-button" class="text-sm text-gray-400 hover:text-red-400 transition duration-150" onclick="clearResults()">
-                    Clear All
+                <button id="analyze-button" class="mt-4 w-full py-3 rounded-lg text-lg font-semibold bg-primary-green hover:bg-green-600 transition duration-150 ease-in-out text-black shadow-md shadow-primary-green/30" onclick="analyzeInvestment()">
+                    Perform Multimodal Analysis
                 </button>
             </div>
-            
-            <div id="loading-indicator" class="hidden text-center p-8">
-                <div class="animate-spin inline-block w-8 h-8 border-4 border-primary-green border-t-transparent rounded-full"></div>
-                <p id="loading-message" class="mt-2 text-primary-green">Analyzing market data...</p>
-            </div>
 
-            <div id="output-container">
-                <div id="output-content" class="min-h-[150px] p-4 bg-dark-bg border border-border-color rounded-lg text-d1fae5">
-                    <p class="text-gray-500">Your professional investment analysis will appear here. Enter your query above to begin.</p>
+            <!-- Output Card (Analysis & Sources) -->
+            <div class="card p-6 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-d1fae5">Analysis Results</h2>
+                    <button id="clear-button" class="text-sm text-gray-400 hover:text-red-400 transition duration-150" onclick="clearResults()">
+                        Clear All
+                    </button>
+                </div>
+                
+                <div id="loading-indicator" class="hidden text-center p-8">
+                    <div class="animate-spin inline-block w-8 h-8 border-4 border-primary-green border-t-transparent rounded-full"></div>
+                    <p id="loading-message" class="mt-2 text-primary-green">Analyzing market data...</p>
                 </div>
 
-                <div id="source-list" class="mt-4 text-sm text-gray-400">
-                    <!-- Sources will be dynamically added here --></div>
+                <div id="output-container">
+                    <div id="output-content" class="min-h-[150px] p-4 bg-dark-bg border border-border-color rounded-lg text-d1fae5">
+                        <p class="text-gray-500">Your professional investment analysis will appear here. Enter your query above to begin.</p>
+                    </div>
+
+                    <div id="source-list" class="mt-4 text-sm text-gray-400">
+                        <!-- Sources will be dynamically added here --></div>
+                </div>
             </div>
         </div>
+
+
+        <!-- 2. ABOUT US VIEW (NEW) -->
+        <div id="about-view" class="hidden p-6">
+            <h2 class="text-3xl font-bold text-primary-green mb-6">About Nexus Analyst</h2>
+            <div class="space-y-6">
+                <p class="text-lg text-gray-300">
+                    **Nexus Analyst** is designed as an advanced AI-driven research tool that provides preliminary investment analysis by integrating textual market context with visual technical chart analysis. Our goal is to augment the initial stages of financial due diligence.
+                </p>
+
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold mb-3 text-primary-green">Our Mission</h3>
+                    <p>We leverage multimodal generative models to create integrated assessments, helping users quickly identify technical patterns, fundamental drivers, and potential risks associated with a given stock or market sector.</p>
+                </div>
+
+                <div class="card p-6 border-red-500">
+                    <h3 class="text-xl font-bold mb-3 text-red-500">CRITICAL: Investment Risk Disclaimer</h3>
+                    <p class="font-bold text-red-400">
+                        **Nexus Analyst is NOT a financial advisor.** The analysis provided is purely algorithmic, based on historical and publicly available data, and is intended for **research, educational, and informational purposes only.**
+                    </p>
+                    <p class="text-sm text-gray-400 mt-2">
+                        Do not use this output as the sole basis for making investment decisions. All investment involves risk, including the loss of principal. Consult with a qualified and regulated financial professional before making any trades or investments.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. PRIVACY POLICY VIEW (NEW) -->
+        <div id="privacy-view" class="hidden p-6">
+            <h2 class="text-3xl font-bold text-primary-green mb-6">Privacy Policy</h2>
+            <div class="space-y-6">
+                <p class="text-lg text-gray-300">
+                    This policy outlines the data practices for the Nexus Analyst tool. We prioritize user privacy, especially given the financial domain.
+                </p>
+
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold mb-3 text-primary-green">What We Do NOT Collect</h3>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li>**Personal Financial Information:** We never ask for or store your bank details, trading account information, or personal investment portfolio data.</li>
+                        <li>**Personally Identifiable Information (PII):** We do not intentionally collect names, addresses, phone numbers, or email addresses.</li>
+                    </ul>
+                </div>
+
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold mb-3 text-primary-green">Data Collection and Processing</h3>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li>**Queries and Images:** The text queries and uploaded images are processed by the generative AI API solely for the purpose of generating the analysis result. They are not stored long-term or used to identify you.</li>
+                        <li>**Public Market Data:** Our analysis relies on accessing publicly available stock and market data via Google Search grounding. This data is non-personal.</li>
+                    </ul>
+                </div>
+
+                <p class="text-sm text-gray-500">
+                    By using this tool, you consent to the temporary processing of your input data for analytical output generation.
+                </p>
+            </div>
+        </div>
+
+        <!-- 4. CONTACT VIEW (NEW) -->
+        <div id="contact-view" class="hidden p-6">
+            <h2 class="text-3xl font-bold text-primary-green mb-6">Contact Nexus Analyst</h2>
+            <div class="space-y-6">
+                <p class="text-lg text-gray-300">
+                    If you have questions regarding the application, partnership opportunities, or technical issues, please reach out to us.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-primary-green">Technical Support</h3>
+                        <p class="text-gray-400">For issues with the tool, errors, or feedback on model behavior.</p>
+                        <p class="mt-3 font-mono text-sm text-primary-green">support@nexusanalyst.com</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-primary-green">General Inquiries</h3>
+                        <p class="text-gray-400">For business, licensing, or general information.</p>
+                        <p class="mt-3 font-mono text-sm text-primary-green">info@nexusanalyst.com</p>
+                    </div>
+                </div>
+                
+                <p class="text-sm text-gray-500 pt-4">We strive to respond to all inquiries within 48 hours.</p>
+            </div>
+        </div>
+
+
+        <!-- FOOTER -->
+        <footer class="text-center text-sm text-gray-600 py-4 mt-8">
+            <p>© {new Date().getFullYear()} Nexus Analyst | Research Tool Only</p>
+        </footer>
 
     </div>
 
@@ -132,7 +236,35 @@
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
         // -----------------------------------------------------------------------
-        // UPDATED SYSTEM PROMPT for Multimodal Expert
+        // NAVIGATION LOGIC (NEW)
+        // -----------------------------------------------------------------------
+        const views = {
+            'analysis': document.getElementById('analysis-view'),
+            'about': document.getElementById('about-view'),
+            'privacy': document.getElementById('privacy-view'),
+            'contact': document.getElementById('contact-view'),
+        };
+        const navLinks = {
+            'analysis': document.getElementById('nav-analysis'),
+            'about': document.getElementById('nav-about'),
+            'privacy': document.getElementById('nav-privacy'),
+            'contact': document.getElementById('nav-contact'),
+        };
+
+        function setView(viewName) {
+            for (const key in views) {
+                if (key === viewName) {
+                    views[key].classList.remove('hidden');
+                    navLinks[key].classList.add('active');
+                } else {
+                    views[key].classList.add('hidden');
+                    navLinks[key].classList.remove('active');
+                }
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // EXISTING SYSTEM PROMPT for Multimodal Expert
         // -----------------------------------------------------------------------
         const SYSTEM_PROMPT = `
         You are an **Expert Market Interpreter and Seasoned Financial Strategist**, capable of integrating both textual market context and visual chart analysis. Your primary function is to provide a concise, high-conviction, ethically grounded, preliminary assessment of a stock or sector.
@@ -363,6 +495,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Set initial view
+            setView('analysis');
+            
+            // Load external libraries (marked and DOMPurify)
             const markedScript = document.createElement('script');
             markedScript.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
             document.head.appendChild(markedScript);
@@ -375,4 +511,3 @@
     </script>
 </body>
 </html>
-
